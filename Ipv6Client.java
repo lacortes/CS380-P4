@@ -26,18 +26,27 @@ public class Ipv6Client {
 			System.out.println("Connected to server");
 
 			PrintStream outStream = new PrintStream(socket.getOutputStream(), true);
-
 			InputStream is = socket.getInputStream();
-			InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-			BufferedReader br = new BufferedReader(isr);
 
 			for (int i = 0; i < 12; i++) {
 				Ipv6 datagram = new Ipv6();
 				byte[] packet = new byte[datagram.size()]; 
 				packet = datagram.getPacket();
 
-				System.out.println("data length: "+ (datagram.size() - 40));
+				byte[] response = new byte[4]; // Hold response 
+
+				System.out.println("data length: "+ (datagram.size()-40));
 				outStream.write(packet, 0, packet.length);
+
+				is.read(response);
+
+				// Show response
+				System.out.print("0x");
+				for (byte data : response) {
+					System.out.print(Integer.toHexString(data & 0xFF));
+				}
+				System.out.println("\n");
+
 			}
 
 		} catch (Exception e) {e.printStackTrace();}

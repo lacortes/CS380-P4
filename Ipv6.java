@@ -37,6 +37,8 @@ public class Ipv6 {
 		this.payLoadData = new byte[this.payloadLen];
 
 		ipMapping(); // Map ipv4 addresses to ipv6
+		populateData();
+		makePacket();
 
 	}
 
@@ -44,7 +46,11 @@ public class Ipv6 {
 	 *	Return size of payload
 	 */
 	public int size() {
-		return this.payloadLen + 40;
+		return this.payloadLen+40;
+	}
+
+	public int loadSize() {
+		return this.payloadLen;
 	}
 
 	/**
@@ -73,11 +79,14 @@ public class Ipv6 {
 		this.packet[index++] = 0x00; 
 
 		// Payload len 
-		byte firstHalf = (byte) ( this.payloadLen & 0xFF00 );
-		byte secondHalf = (byte)  (this.payloadLen & 0x00FF);
+		byte firstHalf = (byte) (this.payloadLen >> 8);
+		this.packet[index++] = firstHalf;
 
-		System.out.println(Integer.toHexString(firstHalf));
-		System.out.println(Integer.toHexString(secondHalf));
+		byte secondHalf = (byte)  (this.payloadLen & 0xFF);
+		this.packet[index++] = secondHalf;
+
+		// System.out.println(Integer.toHexString(firstHalf & 0xFF));
+		// System.out.println(Integer.toHexString(secondHalf & 0xFF));
 
 		// next header
 		this.packet[index++] = this.nextHeader;
@@ -145,5 +154,15 @@ public class Ipv6 {
 			byte data = 0x00; 
 			this.payLoadData[i] = data; 
 		}
+	}
+
+	public String toString() {
+		String x = "";
+		int count = 1; 
+		for (byte data : packet) {
+			x += Integer.toHexString(data & 0xFF);
+			x += " ";
+		}
+		return x;
 	}
 }
