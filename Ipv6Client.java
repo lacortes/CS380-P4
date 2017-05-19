@@ -27,6 +27,19 @@ public class Ipv6Client {
 
 			PrintStream outStream = new PrintStream(socket.getOutputStream(), true);
 
+			InputStream is = socket.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+			BufferedReader br = new BufferedReader(isr);
+
+			for (int i = 0; i < 12; i++) {
+				Ipv6 datagram = new Ipv6();
+				byte[] packet = new byte[datagram.size()]; 
+				packet = datagram.getPacket();
+
+				System.out.println("data length: "+ (datagram.size() - 40));
+				outStream.write(packet, 0, packet.length);
+			}
+
 		} catch (Exception e) {e.printStackTrace();}
 	}
 }
